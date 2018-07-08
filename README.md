@@ -6,10 +6,10 @@
 
 - Getting raw sensor readings for both visible+IR spectrum and IR-only spectrum
 - Using one of the three built in slave addresses, or any custom address
+- Powering the chip on/off to conserve energy
 
 ## TODO
 
-- [ ] Add method to power down chip to minimize power consumption
 - [ ] Add method to perform lux calculation
 - [ ] Add method to control integration time and sensor gain
 - [ ] Add method to setup interrupts
@@ -22,7 +22,9 @@
     use tsl256x::{Tsl2561, SlaveAddr};
     
     let sensor = Tsl2561::new(&mut i2c, SlaveAddr::default().addr()).unwrap();
+    sensor.power_on(&mut i2c); 
     
+    // Note sensor readings are zero until one integration period (default 400ms) after power on
     iprintln!(&mut cp.ITM.stim[0], "IR+Visible: {}, IR Only: {}",
                         sensor.visible_and_ir_raw(&mut i2c).unwrap(),
                         sensor.ir_raw(&mut i2c).unwrap());

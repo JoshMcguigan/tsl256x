@@ -23,15 +23,13 @@ impl<I2C, E> Tsl2561<I2C>
     where
         I2C: i2c::WriteRead<Error = E> + i2c::Write<Error = E>,
 {
-    /// Creates a new driver from a I2C peripheral
+    /// Creates a new sensor driver associated with an I2C peripheral
     /// Phantom I2C ensures whichever I2C bus the device was created on is the one that is used for all future interactions
-    pub fn new(i2c: &mut I2C, address: u8) -> Result<Self, E> {
+    pub fn new(_i2c: &I2C, address: u8) -> Result<Self, E> {
         let tsl2561 = Tsl2561 {
             i2c: PhantomData,
             address,
         };
-
-        tsl2561.power_on(i2c)?;
 
         Ok(tsl2561)
     }
@@ -42,6 +40,14 @@ impl<I2C, E> Tsl2561<I2C>
     pub fn power_on(&self, i2c: &mut I2C) -> Result<(), E> {
         let command = Command::new(Register::CONTROL).value();
         let power_on = 0x03;
+        i2c.write(self.address, &[command, power_on])
+    }
+
+    /// Power down the device
+    /// Sensor readings are initialized to zero
+    pub fn power_off(&self, i2c: &mut I2C) -> Result<(), E> {
+        let command = Command::new(Register::CONTROL).value();
+        let power_on = 0x00;
         i2c.write(self.address, &[command, power_on])
     }
 
