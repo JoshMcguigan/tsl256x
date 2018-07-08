@@ -1,4 +1,4 @@
-//! A platform agnostic driver to interface with the TSL256X (Lux)
+//! A platform agnostic driver to interface with the TSL256X (Lighting Intensity)
 //!
 //! This driver was built using [`embedded-hal`] traits.
 //!
@@ -11,9 +11,11 @@
 extern crate embedded_hal as hal;
 use hal::blocking::i2c;
 
+use core::marker::PhantomData;
+
 /// TSL2561 driver
 pub struct Tsl2561<I2C> {
-    i2c: I2C,
+    i2c: PhantomData<I2C>,
     address: u8,
 }
 
@@ -22,10 +24,14 @@ impl<I2C, E> Tsl2561<I2C>
         I2C: i2c::WriteRead<Error = E> + i2c::Write<Error = E>,
 {
     /// Creates a new driver from a I2C peripheral
-    pub fn new(i2c: I2C) -> Result<Self, E> {
-        let mut tsl2561 = Tsl2561 { i2c, address: 0x39 };
+    /// Phantom I2C ensures whichever I2C bus the device was created on is the one that is used for all future interactions
+    pub fn new(i2c: &mut I2C) -> Result<Self, E> {
+        let tsl2561 = Tsl2561 {
+            i2c: PhantomData,
+            address: 0x39,
+        };
 
-        tsl2561.power_on()?;
+        tsl2561.power_on(i2c)?;
 
         Ok(tsl2561)
     }
@@ -33,31 +39,31 @@ impl<I2C, E> Tsl2561<I2C>
     /// Power on the device
     /// Sensor readings are initialized to zero
     /// Actual sensor readings are not available until one integration period has passed (default 400ms)
-    pub fn power_on(&mut self) -> Result<(), E> {
+    pub fn power_on(&self, i2c: &mut I2C) -> Result<(), E> {
         let command = Command::new(Register::CONTROL).value();
         let power_on = 0x03;
-        self.i2c.write(self.address, &[command, power_on])
+        i2c.write(self.address, &[command, power_on])
     }
 
     /// Raw value from channel 0 ADC measuring IR + Visible spectrum
-    pub fn visible_and_ir_raw(&mut self) -> Result<u16, E> {
+    pub fn visible_and_ir_raw(&self, i2c: &mut I2C) -> Result<u16, E> {
         let command = Command::new(Register::DATA0LOW)
             .enable_word_protocol().value();
 
         let mut buffer : [u8;2] = [0;2];
-        self.i2c.write_read(self.address, &[command], &mut buffer)?;
+        i2c.write_read(self.address, &[command], &mut buffer)?;
         let result = ((buffer[1] as u16) << 8) | buffer[0] as u16;
 
         Ok(result)
     }
 
     /// Raw value from channel 1 ADC measuring IR spectrum only
-    pub fn ir_raw(&mut self) -> Result<u16, E> {
+    pub fn ir_raw(&self, i2c: &mut I2C) -> Result<u16, E> {
         let command = Command::new(Register::DATA1LOW)
             .enable_word_protocol().value();
 
         let mut buffer : [u8;2] = [0;2];
-        self.i2c.write_read(self.address, &[command], &mut buffer)?;
+        i2c.write_read(self.address, &[command], &mut buffer)?;
         let result = ((buffer[1] as u16) << 8) | buffer[0] as u16;
 
         Ok(result)

@@ -21,11 +21,11 @@
     extern crate tsl256x;
     use tsl256x::Tsl2561;
     
-    let mut sensor = Tsl2561::new(i2c).unwrap();
+    let sensor = Tsl2561::new(&mut i2c).unwrap();
     
     iprintln!(&mut cp.ITM.stim[0], "IR+Visible: {}, IR Only: {}",
-                        sensor.visible_and_ir_raw().unwrap(),
-                        sensor.ir_raw().unwrap());
+                        sensor.visible_and_ir_raw(&mut i2c).unwrap(),
+                        sensor.ir_raw(&mut i2c).unwrap());
 ```
     
 ## License
