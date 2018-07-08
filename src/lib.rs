@@ -25,10 +25,10 @@ impl<I2C, E> Tsl2561<I2C>
 {
     /// Creates a new driver from a I2C peripheral
     /// Phantom I2C ensures whichever I2C bus the device was created on is the one that is used for all future interactions
-    pub fn new(i2c: &mut I2C) -> Result<Self, E> {
+    pub fn new(i2c: &mut I2C, address: u8) -> Result<Self, E> {
         let tsl2561 = Tsl2561 {
             i2c: PhantomData,
-            address: 0x39,
+            address,
         };
 
         tsl2561.power_on(i2c)?;
@@ -125,5 +125,31 @@ impl Command {
             ((self.clear as u8) << 6) |
             ((self.word as u8) << 5) |
             ((self.block as u8) << 4)
+    }
+}
+
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
+#[derive(Copy, Clone)]
+/// Possible slave addresses
+pub enum SlaveAddr {
+    /// Default slave address
+    ADDR_0x39 = 0x39,
+    /// Optional slave address
+    ADDR_0x29 = 0x29,
+    /// Optional slave address
+    ADDR_0x49 = 0x49,
+}
+
+impl Default for SlaveAddr {
+    fn default() -> Self {
+        SlaveAddr::ADDR_0x39
+    }
+}
+
+impl SlaveAddr {
+    /// Get slave address as u8
+    pub fn addr(&self) -> u8 {
+        *self as u8
     }
 }

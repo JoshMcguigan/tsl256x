@@ -5,10 +5,10 @@
 ## What works
 
 - Getting raw sensor readings for both visible+IR spectrum and IR-only spectrum
+- Using one of the three built in slave addresses, or any custom address
 
 ## TODO
 
-- [ ] Support other i2c addresses
 - [ ] Add method to power down chip to minimize power consumption
 - [ ] Add method to perform lux calculation
 - [ ] Add method to control integration time and sensor gain
@@ -19,9 +19,9 @@
 
 ```rust
     extern crate tsl256x;
-    use tsl256x::Tsl2561;
+    use tsl256x::{Tsl2561, SlaveAddr};
     
-    let sensor = Tsl2561::new(&mut i2c).unwrap();
+    let sensor = Tsl2561::new(&mut i2c, SlaveAddr::default().addr()).unwrap();
     
     iprintln!(&mut cp.ITM.stim[0], "IR+Visible: {}, IR Only: {}",
                         sensor.visible_and_ir_raw(&mut i2c).unwrap(),
