@@ -10,7 +10,7 @@
 
 ## TODO
 
-- [ ] Add method to perform lux calculation
+- [ ] Add method to perform lux calculation (requires nostd implementation of exponentiation for f32)
 - [ ] Add method to control integration time and sensor gain
 - [ ] Add method to setup interrupts
 - [ ] Support the TSL2560 (SPI version)
