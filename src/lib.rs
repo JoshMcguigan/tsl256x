@@ -74,6 +74,17 @@ impl<I2C, E> Tsl2561<I2C>
 
         Ok(result)
     }
+
+    /// Set the sensor integration time and gain
+    /// These settings share a register in the instrument so setting them both requires only a single write
+    /// Changes to these settings do not take effect until the next integration period
+    pub fn config_time_gain(&self, i2c: &mut I2C, integration_time: IntegrationTime, gain: Gain)
+        -> Result<(), E>
+    {
+        let command = Command::new(Register::TIMING).value();
+        let setting = (*&integration_time as u8) | ((*&gain as u8) << 4);
+        i2c.write(self.address, &[command, setting])
+    }
 }
 
 #[allow(dead_code)]
@@ -158,4 +169,31 @@ impl SlaveAddr {
     pub fn addr(&self) -> u8 {
         *self as u8
     }
+}
+
+#[allow(dead_code)]
+#[allow(non_camel_case_types)]
+#[derive(Copy, Clone)]
+/// Available integration times
+/// Lux calculations must take this setting into account
+/// Triggering integration start and stop manually is an option of the device but not supported by this driver
+pub enum IntegrationTime {
+    /// 13.7 milliseconds
+    ms_13 = 0,
+    /// 101 milliseconds
+    ms_101 = 1,
+    /// 402 milliseconds (default)
+    ms_402 = 2,
+}
+
+
+#[allow(dead_code)]
+#[derive(Copy, Clone)]
+/// Available sensor gain settings
+/// Lux calculations must take this setting into account
+pub enum Gain {
+    /// Low gain - 1x (default)
+    Low = 0,
+    /// High gain - 16x
+    High = 1,
 }

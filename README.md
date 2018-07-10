@@ -7,11 +7,11 @@
 - Getting raw sensor readings for both visible+IR spectrum and IR-only spectrum
 - Using one of the three built in slave addresses, or any custom address
 - Powering the chip on/off to conserve energy
+- Setting sensor gain and integration time
 
 ## TODO
 
 - [ ] Add method to perform lux calculation (requires nostd implementation of exponentiation for f32)
-- [ ] Add method to control integration time and sensor gain
 - [ ] Add method to setup interrupts
 - [ ] Support the TSL2560 (SPI version)
 
