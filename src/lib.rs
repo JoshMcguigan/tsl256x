@@ -24,6 +24,7 @@ impl<I2C, E> Tsl2561<I2C>
         I2C: i2c::WriteRead<Error = E> + i2c::Write<Error = E>,
 {
     /// Creates a new sensor driver associated with an I2C peripheral
+    ///
     /// Phantom I2C ensures whichever I2C bus the device was created on is the one that is used for all future interactions
     pub fn new(_i2c: &I2C, address: u8) -> Result<Self, E> {
         let tsl2561 = Tsl2561 {
@@ -35,7 +36,9 @@ impl<I2C, E> Tsl2561<I2C>
     }
 
     /// Power on the device
+    ///
     /// Sensor readings are initialized to zero
+    ///
     /// Actual sensor readings are not available until one integration period has passed (default 400ms)
     pub fn power_on(&self, i2c: &mut I2C) -> Result<(), E> {
         let command = Command::new(Register::CONTROL).value();
@@ -44,6 +47,7 @@ impl<I2C, E> Tsl2561<I2C>
     }
 
     /// Power down the device
+    ///
     /// Sensor readings are initialized to zero
     pub fn power_off(&self, i2c: &mut I2C) -> Result<(), E> {
         let command = Command::new(Register::CONTROL).value();
@@ -76,7 +80,9 @@ impl<I2C, E> Tsl2561<I2C>
     }
 
     /// Set the sensor integration time and gain
+    ///
     /// These settings share a register in the instrument so setting them both requires only a single write
+    ///
     /// Changes to these settings do not take effect until the next integration period
     pub fn config_time_gain(&self, i2c: &mut I2C, integration_time: IntegrationTime, gain: Gain)
         -> Result<(), E>
@@ -175,7 +181,9 @@ impl SlaveAddr {
 #[allow(non_camel_case_types)]
 #[derive(Copy, Clone)]
 /// Available integration times
+///
 /// Lux calculations must take this setting into account
+///
 /// Triggering integration start and stop manually is an option of the device but not supported by this driver
 pub enum IntegrationTime {
     /// 13.7 milliseconds
@@ -190,6 +198,7 @@ pub enum IntegrationTime {
 #[allow(dead_code)]
 #[derive(Copy, Clone)]
 /// Available sensor gain settings
+///
 /// Lux calculations must take this setting into account
 pub enum Gain {
     /// Low gain - 1x (default)
