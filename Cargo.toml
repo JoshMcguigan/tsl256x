@@ -2,6 +2,12 @@
 name = "tsl256x"
 version = "0.1.0"
 authors = ["Josh Mcguigan"]
+categories = ["embedded", "hardware-support", "no-std"]
+description = "Platform agnostic driver for TSL256x series light intensity sensors built using the embedded-hal"
+keywords = ["embedded-hal"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/JoshMcguigan/tsl256x"
+readme = "README.md"
 
 [dependencies]
 embedded-hal = "0.2.1"

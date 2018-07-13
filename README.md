@@ -1,4 +1,4 @@
-# tsl256x Light-To-Digital Converter
+# tsl256x Light-To-Digital Converter [![Docs](https://img.shields.io/crates/v/tsl256x.svg)](https://crates.io/crates/tsl256x) [![Docs](https://docs.rs/tsl256x/badge.svg)](https://docs.rs/tsl256x)
 
 > Platform agnostic driver for TSL256x series of light intensity sensors built using the embedded-hal
 
