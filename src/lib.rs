@@ -25,6 +25,8 @@ impl<I2C, E> Tsl2561<I2C>
 {
     /// Creates a new sensor driver associated with an I2C peripheral
     ///
+    /// You'll likely want to power_on the device after this
+    ///
     /// Phantom I2C ensures whichever I2C bus the device was created on is the one that is used for all future interactions
     pub fn new(_i2c: &I2C, address: u8) -> Result<Self, E> {
         let tsl2561 = Tsl2561 {
